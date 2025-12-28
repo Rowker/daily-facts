@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Facts - Learn Something New</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="date-display" id="current-date">Loading date...</div>
+            <h1>On This Day</h1>
+        </header>
+
+        <main>
+            <div class="fact-card" id="fact-card">
+                <div class="loading-spinner" id="loader"></div>
+                <div class="fact-content hidden" id="fact-content">
+                    <p class="fact-year" id="fact-year"></p>
+                    <p class="fact-text" id="fact-text"></p>
+                    <p class="fact-description" id="fact-description"></p>
+                    <a href="#" target="_blank" class="read-more-btn" id="read-more-link">Read more on Wikipedia</a>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="next-fact-btn" class="btn primary-btn">
+                    <span class="btn-text">Next Fact</span>
+                    <span class="btn-icon">→</span>
+                </button>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by Wikidata</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

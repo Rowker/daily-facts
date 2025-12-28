@@ -218,21 +218,23 @@ document.addEventListener('DOMContentLoaded', () => {
             'activist', 'leader', 'legend', 'star', 'famous', 'notable'
         ];
 
-        // Filter and Sort
+        // Filter
         let items = data.filter(item => {
             const text = item.text.toLowerCase();
             return importanceKeywords.some(keyword => text.includes(keyword));
         });
 
-        // If we don't have enough "important" people, fill with others
+        // Randomize the "Important" items so it's not the same 5 every time
+        items = items.sort(() => 0.5 - Math.random());
+
+        // If we don't have enough "important" people, fill with others (also randomized)
         if (items.length < 5) {
-            const remaining = data.filter(item => !items.includes(item));
+            let remaining = data.filter(item => !items.includes(item));
+            remaining = remaining.sort(() => 0.5 - Math.random());
             items = items.concat(remaining.slice(0, 5 - items.length));
         }
 
-        // Sort by year (descending for recent, or ascending for historical? let's do descending/recent first)
-        // Actually, for births/deaths, maybe just random or by "importance" heuristic? 
-        // Let's just take the top 5 from our filtered list (which implies the API's default order + our filter)
+        // Limit to 5
         items = items.slice(0, 5);
 
         listElement.innerHTML = '';
@@ -241,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
             li.className = 'person-item';
 
             // Parse Name and Description
-            // Format is usually "Name, Description"
             const firstCommaIndex = item.text.indexOf(',');
             let name = item.text;
             let description = "";
@@ -249,24 +250,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (firstCommaIndex !== -1) {
                 name = item.text.substring(0, firstCommaIndex);
                 description = item.text.substring(firstCommaIndex + 1).trim();
-                // Capitalize first letter of description if needed
                 description = description.charAt(0).toUpperCase() + description.slice(1);
             } else {
-                // Fallback if no comma
-                description = item.text; // Or leave empty? Let's show full text as desc if no clear split
-                name = "Notable Figure"; // Or try to guess?
-                // Actually, if no comma, it might be "Name died..." or something. 
-                // Let's just keep the original text as the name if we can't split it, 
-                // or maybe just put it all in description?
-                // Wikipedia API usually has "Name, description".
-                // Let's stick to the split logic. If no comma, assume it's just a name or short phrase.
-                name = item.text;
-                description = "";
+                name = "Notable Figure";
+                description = item.text;
+            }
+
+            // Generate Link if available
+            let nameHtml = `<span class="person-name">${name}</span>`;
+            if (item.pages && item.pages.length > 0) {
+                const pageUrl = item.pages[0].content_urls.desktop.page;
+                nameHtml = `<a href="${pageUrl}" target="_blank" class="person-name person-link">${name}</a>`;
             }
 
             li.innerHTML = `
                 <span class="person-year">${item.year}</span>
-                <span class="person-name">${name}</span>
+                ${nameHtml}
                 ${description ? `<span class="person-desc">${description}</span>` : ''}
             `;
             listElement.appendChild(li);

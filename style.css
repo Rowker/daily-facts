@@ -1,10 +1,12 @@
 :root {
     --bg-color: #0f172a;
     --card-bg: #1e293b;
+    --sidebar-bg: #162032;
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --accent-color: #38bdf8;
     --accent-hover: #0ea5e9;
+    --border-color: rgba(255, 255, 255, 0.05);
     --font-main: 'Outfit', sans-serif;
 }
 
@@ -20,22 +22,33 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    line-height: 1.6;
+    flex-direction: column;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
 }
 
-.container {
+.app-container {
     width: 100%;
-    max-width: 600px;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
 }
 
+/* Header */
 header {
     text-align: center;
+    margin-bottom: 2rem;
+}
+
+.mobile-header {
+    display: none;
+}
+
+.desktop-header {
+    display: block;
 }
 
 .date-display {
@@ -57,55 +70,182 @@ h1 {
     -webkit-text-fill-color: transparent;
 }
 
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    /* Increased sidebar widths */
+    gap: 2rem;
+    flex: 1;
+    min-height: 0;
+    /* Important for scrolling */
+    align-items: start;
+    /* Prevent stretching */
+}
+
+/* Sidebars */
+.sidebar {
+    background-color: var(--sidebar-bg);
+    border-radius: 24px;
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    height: calc(100vh - 100px);
+    /* Sticky height */
+    position: sticky;
+    top: 20px;
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+/* Left Sidebar: Categories */
+.category-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.category-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-size: 1rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.category-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.category-btn.active {
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--accent-color);
+    border-color: rgba(56, 189, 248, 0.2);
+}
+
+/* Right Sidebar: Lists */
+.list-section {
+    margin-bottom: 2rem;
+}
+
+.person-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.person-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.person-item:last-child {
+    border-bottom: none;
+}
+
+.person-year {
+    font-size: 0.8rem;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.person-name {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.person-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Main Content */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
 .fact-card {
     background-color: var(--card-bg);
     border-radius: 24px;
     padding: 3rem;
-    min-height: 300px;
+    min-height: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
     transition: transform 0.3s ease;
 }
 
-.fact-card:hover {
-    transform: translateY(-5px);
+.fact-image-container {
+    width: 100%;
+    max-height: 300px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.fact-image-container img {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
 }
 
 .fact-year {
-    font-size: 4rem;
+    font-size: 1.2rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.05);
-    position: absolute;
-    top: -10px;
-    right: 20px;
-    user-select: none;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.fact-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
 }
 
 .fact-text {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 400;
-    margin-bottom: 1rem;
-    position: relative;
-    z-index: 1;
-}
-
-.fact-description {
-    font-size: 1rem;
     color: var(--text-secondary);
     margin-bottom: 2rem;
-    max-width: 80%;
+    line-height: 1.6;
+    max-width: 800px;
     margin-left: auto;
     margin-right: auto;
-    line-height: 1.6;
-    position: relative;
-    z-index: 1;
 }
 
 .read-more-btn {
@@ -116,8 +256,6 @@ h1 {
     font-size: 0.9rem;
     border-bottom: 2px solid transparent;
     transition: all 0.2s;
-    position: relative;
-    z-index: 1;
 }
 
 .read-more-btn:hover {
@@ -178,26 +316,83 @@ h1 {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 footer {
     text-align: center;
     color: var(--text-secondary);
     font-size: 0.8rem;
-    margin-top: auto;
+    margin-top: 2rem;
+    padding-bottom: 1rem;
 }
 
-@media (max-width: 480px) {
-    h1 {
-        font-size: 2.5rem;
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--card-bg);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 200px 1fr;
     }
 
-    .fact-card {
-        padding: 2rem;
+    .right-sidebar {
+        display: none;
+        /* Hide right sidebar on tablets, or move it */
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        display: flex;
+        flex-direction: column;
     }
 
-    .fact-text {
-        font-size: 1.25rem;
+    .desktop-header {
+        display: none;
+    }
+
+    .mobile-header {
+        display: block;
+    }
+
+    .sidebar {
+        height: auto;
+        position: static;
+        overflow: visible;
+    }
+
+    .category-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+
+    .category-btn {
+        white-space: nowrap;
+    }
+
+    .fact-title {
+        font-size: 2rem;
+    }
+
+    .right-sidebar {
+        display: block;
+        /* Show again on mobile at bottom */
     }
 }

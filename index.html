@@ -7,38 +7,90 @@
     <title>Daily Facts - Learn Something New</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <div class="date-display" id="current-date">Loading date...</div>
+    <div class="app-container">
+        <header class="mobile-header">
+            <div class="date-display" id="current-date-mobile">Loading date...</div>
             <h1>On This Day</h1>
         </header>
 
-        <main>
-            <div class="fact-card" id="fact-card">
-                <div class="loading-spinner" id="loader"></div>
-                <div class="fact-content hidden" id="fact-content">
-                    <p class="fact-year" id="fact-year"></p>
-                    <p class="fact-text" id="fact-text"></p>
-                    <p class="fact-description" id="fact-description"></p>
-                    <a href="#" target="_blank" class="read-more-btn" id="read-more-link">Read more on Wikipedia</a>
+        <div class="dashboard-grid">
+            <!-- Left Sidebar: Categories -->
+            <aside class="sidebar left-sidebar">
+                <div class="sidebar-content">
+                    <h2>Categories</h2>
+                    <nav class="category-nav">
+                        <button class="category-btn active" data-category="general">
+                            <span class="icon">🌍</span> General
+                        </button>
+                        <button class="category-btn" data-category="us_history">
+                            <span class="icon">🇺🇸</span> US History
+                        </button>
+                        <button class="category-btn" data-category="sports">
+                            <span class="icon">⚽</span> Sports
+                        </button>
+                    </nav>
                 </div>
-            </div>
+            </aside>
 
-            <div class="controls">
-                <button id="next-fact-btn" class="btn primary-btn">
-                    <span class="btn-text">Next Fact</span>
-                    <span class="btn-icon">→</span>
-                </button>
-            </div>
-        </main>
+            <!-- Center: Main Content -->
+            <main class="main-content">
+                <header class="desktop-header">
+                    <div class="date-display" id="current-date">Loading date...</div>
+                    <h1>On This Day</h1>
+                </header>
+
+                <div class="fact-card" id="fact-card">
+                    <div class="loading-spinner" id="loader"></div>
+
+                    <div class="fact-content hidden" id="fact-content">
+                        <div class="fact-image-container hidden" id="fact-image-container">
+                            <img id="fact-image" src="" alt="Fact Image">
+                        </div>
+
+                        <div class="fact-details">
+                            <p class="fact-year" id="fact-year"></p>
+                            <h2 class="fact-title" id="fact-title"></h2>
+                            <p class="fact-text" id="fact-text"></p>
+                            <a href="#" target="_blank" class="read-more-btn" id="read-more-link">Read more on
+                                Wikipedia</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="next-fact-btn" class="btn primary-btn">
+                        <span class="btn-text">Next Fact</span>
+                        <span class="btn-icon">→</span>
+                    </button>
+                </div>
+            </main>
+
+            <!-- Right Sidebar: Births & Deaths -->
+            <aside class="sidebar right-sidebar">
+                <div class="sidebar-content">
+                    <div class="list-section">
+                        <h2>Births</h2>
+                        <ul class="person-list" id="births-list">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                    <div class="list-section">
+                        <h2>Deaths</h2>
+                        <ul class="person-list" id="deaths-list">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
 
         <footer>
-            <p>Powered by Wikidata</p>
+            <p>Powered by Wikipedia</p>
         </footer>
     </div>
     <script src="script.js"></script>

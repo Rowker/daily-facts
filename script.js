@@ -82,50 +82,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function filterFacts() {
-        if (!allData || !allData.selected) return;
+        if (!allData) return;
 
-        const allSelected = allData.selected;
+        // Use 'events' for specific categories to get more results, 'selected' for general
+        const sourceData = currentCategory === 'general' ? allData.selected : allData.events;
+
+        if (!sourceData) {
+            factTextElement.textContent = "Loading data...";
+            return;
+        }
 
         switch (currentCategory) {
             case 'us_history':
-                filteredFacts = allSelected.filter(fact => {
+                const usKeywords = [
+                    'united states', 'american', 'u.s.', 'usa', 'president', 'congress', 'senate',
+                    'white house', 'constitution', 'civil war', 'revolution', 'independence',
+                    'federal', 'supreme court', 'pentagon', 'nasa', 'apollo', 'space shuttle',
+                    'alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado', 'connecticut',
+                    'delaware', 'florida', 'georgia', 'hawaii', 'idaho', 'illinois', 'indiana', 'iowa',
+                    'kansas', 'kentucky', 'louisiana', 'maine', 'maryland', 'massachusetts', 'michigan',
+                    'minnesota', 'mississippi', 'missouri', 'montana', 'nebraska', 'nevada', 'new hampshire',
+                    'new jersey', 'new mexico', 'new york', 'north carolina', 'north dakota', 'ohio',
+                    'oklahoma', 'oregon', 'pennsylvania', 'rhode island', 'south carolina', 'south dakota',
+                    'tennessee', 'texas', 'utah', 'vermont', 'virginia', 'washington', 'west virginia',
+                    'wisconsin', 'wyoming', 'confederate', 'union army', 'declaration of independence'
+                ];
+                filteredFacts = sourceData.filter(fact => {
                     const text = fact.text.toLowerCase();
-                    return text.includes('united states') ||
-                        text.includes('american') ||
-                        text.includes('u.s.') ||
-                        text.includes('usa') ||
-                        text.includes('president') ||
-                        text.includes('congress');
+                    return usKeywords.some(keyword => text.includes(keyword));
                 });
                 break;
             case 'sports':
-                filteredFacts = allSelected.filter(fact => {
+                const sportsKeywords = [
+                    'sport', 'game', 'cup', 'championship', 'olympic', 'league', 'player', 'team', 'won',
+                    'nfl', 'nba', 'mlb', 'nhl', 'super bowl', 'world series', 'stanley cup', 'touchdown',
+                    'homerun', 'slam dunk', 'quarterback', 'pitcher', 'goal', 'medal', 'tournament',
+                    'wimbledon', 'us open', 'fifa', 'uefa', 'boxing', 'heavyweight', 'champion', 'race',
+                    'nascar', 'formula one', 'grand prix', 'marathon', 'rugby', 'cricket', 'basketball',
+                    'baseball', 'football', 'hockey', 'soccer', 'tennis', 'golf', 'pga', 'masters'
+                ];
+                filteredFacts = sourceData.filter(fact => {
                     const text = fact.text.toLowerCase();
-                    return text.includes('sport') ||
-                        text.includes('game') ||
-                        text.includes('cup') ||
-                        text.includes('championship') ||
-                        text.includes('olympic') ||
-                        text.includes('league') ||
-                        text.includes('player') ||
-                        text.includes('team') ||
-                        text.includes('won');
+                    return sportsKeywords.some(keyword => text.includes(keyword));
                 });
                 break;
             default: // general
-                filteredFacts = allSelected;
+                filteredFacts = sourceData;
         }
 
         if (filteredFacts.length === 0) {
-            // Fallback if no facts match category
-            filteredFacts = allSelected;
-            // Optional: Show a message saying "No specific facts found, showing all"
+            // Specific message if no facts match category
+            factTitleElement.textContent = "No Facts Found";
+            factTextElement.textContent = `We couldn't find any ${currentCategory.replace('_', ' ')} facts for today. Try another category!`;
+            factYearElement.textContent = "";
+            factImageContainer.classList.add('hidden');
+            readMoreLink.style.display = 'none';
+        } else {
+            // Shuffle
+            filteredFacts = filteredFacts.sort(() => 0.5 - Math.random());
+            currentFactIndex = 0;
+            readMoreLink.style.display = 'inline-block';
+            displayFact(filteredFacts[0]);
         }
-
-        // Shuffle
-        filteredFacts = filteredFacts.sort(() => 0.5 - Math.random());
-        currentFactIndex = 0;
-        displayFact(filteredFacts[0]);
     }
 
     function displayFact(fact) {

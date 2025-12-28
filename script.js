@@ -95,31 +95,42 @@ document.addEventListener('DOMContentLoaded', () => {
         switch (currentCategory) {
             case 'us_history':
                 const usKeywords = [
-                    'united states', 'american', 'u.s.', 'usa', 'president', 'congress', 'senate',
-                    'white house', 'constitution', 'civil war', 'revolution', 'independence',
-                    'federal', 'supreme court', 'pentagon', 'nasa', 'apollo', 'space shuttle',
-                    'alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado', 'connecticut',
-                    'delaware', 'florida', 'georgia', 'hawaii', 'idaho', 'illinois', 'indiana', 'iowa',
-                    'kansas', 'kentucky', 'louisiana', 'maine', 'maryland', 'massachusetts', 'michigan',
-                    'minnesota', 'mississippi', 'missouri', 'montana', 'nebraska', 'nevada', 'new hampshire',
-                    'new jersey', 'new mexico', 'new york', 'north carolina', 'north dakota', 'ohio',
-                    'oklahoma', 'oregon', 'pennsylvania', 'rhode island', 'south carolina', 'south dakota',
-                    'tennessee', 'texas', 'utah', 'vermont', 'virginia', 'washington', 'west virginia',
-                    'wisconsin', 'wyoming', 'confederate', 'union army', 'declaration of independence'
+                    'united states', 'american', 'u.s.', 'usa', 'us president', 'congress', 'senate',
+                    'white house', 'constitution', 'civil war', 'american revolution', 'independence day',
+                    'federal government', 'supreme court', 'pentagon', 'nasa', 'apollo', 'space shuttle',
+                    'confederate', 'union army', 'declaration of independence', 'bill of rights',
+                    'gettysburg', 'lincoln', 'washington d.c.', 'native american', 'cherokee', 'sioux',
+                    'apache', 'navajo', 'pearl harbor', 'vietnam war', 'korean war', 'gulf war',
+                    'manhattan project', 'wall street', 'hollywood', 'broadway', 'mount rushmore',
+                    'statue of liberty', 'ellis island', 'alamo', 'lewis and clark', 'oregon trail',
+                    'gold rush', 'prohibition', 'suffrage', 'civil rights', 'martin luther king',
+                    'jfk', 'fdr', 'roosevelt', 'kennedy', 'nixon', 'reagan', 'obama', 'clinton', 'bush'
                 ];
+                // Exclude terms that might match generic words but aren't US history
+                const usExclude = ['soviet', 'russian', 'french', 'british', 'european', 'canadian', 'mexican', 'chinese', 'japanese', 'german', 'italian'];
+
                 filteredFacts = sourceData.filter(fact => {
                     const text = fact.text.toLowerCase();
-                    return usKeywords.some(keyword => text.includes(keyword));
+                    const matchesKeyword = usKeywords.some(keyword => text.includes(keyword));
+                    const matchesExclude = usExclude.some(keyword => text.includes(keyword));
+
+                    // Special case for state names: only include if they are likely referring to the state context
+                    // (This is hard without NLP, so we'll skip state names for now to be safe, or rely on specific events)
+
+                    return matchesKeyword && !matchesExclude;
                 });
                 break;
             case 'sports':
                 const sportsKeywords = [
-                    'sport', 'game', 'cup', 'championship', 'olympic', 'league', 'player', 'team', 'won',
-                    'nfl', 'nba', 'mlb', 'nhl', 'super bowl', 'world series', 'stanley cup', 'touchdown',
-                    'homerun', 'slam dunk', 'quarterback', 'pitcher', 'goal', 'medal', 'tournament',
-                    'wimbledon', 'us open', 'fifa', 'uefa', 'boxing', 'heavyweight', 'champion', 'race',
-                    'nascar', 'formula one', 'grand prix', 'marathon', 'rugby', 'cricket', 'basketball',
-                    'baseball', 'football', 'hockey', 'soccer', 'tennis', 'golf', 'pga', 'masters'
+                    'nfl', 'nba', 'mlb', 'nhl', 'super bowl', 'world series', 'stanley cup',
+                    'olympic', 'wimbledon', 'us open', 'fifa', 'uefa', 'nascar', 'formula one',
+                    'grand prix', 'pga tour', 'masters tournament', 'ryder cup', 'davis cup',
+                    'world cup', 'touchdown', 'homerun', 'slam dunk', 'quarterback', 'no-hitter',
+                    'hat trick', 'gold medal', 'silver medal', 'bronze medal', 'heavyweight champion',
+                    'boxing title', 'wba', 'wbc', 'ibf', 'wbo', 'ufc', 'mma', 'wwe', 'wrestlemania',
+                    'tour de france', 'giro d\'italia', 'vuelta a espana', 'indy 500', 'daytona 500',
+                    'kentucky derby', 'preakness', 'belmont stakes', 'triple crown', 'heisman trophy',
+                    'mvp', 'cy young', 'rookie of the year', 'hall of fame', 'all-star'
                 ];
                 filteredFacts = sourceData.filter(fact => {
                     const text = fact.text.toLowerCase();
@@ -199,21 +210,64 @@ document.addEventListener('DOMContentLoaded', () => {
     function populateSidebar(listElement, data, type) {
         if (!data) return;
 
-        // Take top 10 random or sorted
-        const items = data.sort((a, b) => b.year - a.year).slice(0, 20); // Show recent 20
+        // Keywords for importance/US context
+        const importanceKeywords = [
+            'united states', 'american', 'usa', 'president', 'king', 'queen', 'emperor',
+            'prime minister', 'nobel', 'scientist', 'inventor', 'artist', 'musician',
+            'writer', 'author', 'general', 'admiral', 'pope', 'founder', 'ceo',
+            'activist', 'leader', 'legend', 'star', 'famous', 'notable'
+        ];
+
+        // Filter and Sort
+        let items = data.filter(item => {
+            const text = item.text.toLowerCase();
+            return importanceKeywords.some(keyword => text.includes(keyword));
+        });
+
+        // If we don't have enough "important" people, fill with others
+        if (items.length < 5) {
+            const remaining = data.filter(item => !items.includes(item));
+            items = items.concat(remaining.slice(0, 5 - items.length));
+        }
+
+        // Sort by year (descending for recent, or ascending for historical? let's do descending/recent first)
+        // Actually, for births/deaths, maybe just random or by "importance" heuristic? 
+        // Let's just take the top 5 from our filtered list (which implies the API's default order + our filter)
+        items = items.slice(0, 5);
 
         listElement.innerHTML = '';
         items.forEach(item => {
             const li = document.createElement('li');
             li.className = 'person-item';
 
-            const name = item.text.split(',')[0]; // Simple heuristic to get name
-            // Or use item.pages[0].title if available
+            // Parse Name and Description
+            // Format is usually "Name, Description"
+            const firstCommaIndex = item.text.indexOf(',');
+            let name = item.text;
+            let description = "";
+
+            if (firstCommaIndex !== -1) {
+                name = item.text.substring(0, firstCommaIndex);
+                description = item.text.substring(firstCommaIndex + 1).trim();
+                // Capitalize first letter of description if needed
+                description = description.charAt(0).toUpperCase() + description.slice(1);
+            } else {
+                // Fallback if no comma
+                description = item.text; // Or leave empty? Let's show full text as desc if no clear split
+                name = "Notable Figure"; // Or try to guess?
+                // Actually, if no comma, it might be "Name died..." or something. 
+                // Let's just keep the original text as the name if we can't split it, 
+                // or maybe just put it all in description?
+                // Wikipedia API usually has "Name, description".
+                // Let's stick to the split logic. If no comma, assume it's just a name or short phrase.
+                name = item.text;
+                description = "";
+            }
 
             li.innerHTML = `
                 <span class="person-year">${item.year}</span>
                 <span class="person-name">${name}</span>
-                <span class="person-desc">${item.text}</span>
+                ${description ? `<span class="person-desc">${description}</span>` : ''}
             `;
             listElement.appendChild(li);
         });

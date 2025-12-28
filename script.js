@@ -54,13 +54,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const script = document.createElement('script');
         script.src = url;
+
+        // Timeout fallback
+        const timeoutId = setTimeout(() => {
+            console.error('JSONP request timed out');
+            if (window[callbackName]) {
+                factTextElement.textContent = "Request timed out. Please check your connection.";
+                showLoading(false);
+                delete window[callbackName];
+                document.body.removeChild(script);
+            }
+        }, 10000); // 10 seconds
+
         script.onerror = function () {
+            clearTimeout(timeoutId);
             console.error('Error fetching facts via JSONP');
             factTextElement.textContent = "Failed to load facts. Please try again later.";
             showLoading(false);
             delete window[callbackName];
             document.body.removeChild(script);
         };
+
+        // Wrap callback to clear timeout
+        const originalCallback = window[callbackName];
+        window[callbackName] = function (data) {
+            clearTimeout(timeoutId);
+            originalCallback(data);
+        };
+
         document.body.appendChild(script);
     }
 
